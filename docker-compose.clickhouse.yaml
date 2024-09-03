@@ -1,21 +1,9 @@
-version: '2'
+version: '3'
 
 services:
   clickhouse:
-    image: bitnami/clickhouse:latest
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    networks:
-      - statistic-network
-    volumes:
-      - type: bind
-        source: ./tsv/hits_v1.tsv
-        target: /bitnami/clickhouse/tsv/hits_v1.tsv
-      - /etc/conf.d/clickhouse.config.xml:/bitnami/clickhouse/etc/conf.d/config.xml:ro
+    image: clickhouse/clickhouse-server:latest
     ports:
-      - "8002:9000"
       - "9123:8123"
-
-networks:
-  statistic-network:
-    driver: bridge
+      - "10000:9000"
+      - "10009:9009"
