@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  kafka:
+    image: bitnami/kafka:latest
+    restart: unless-stopped
+    environment:
+      - 'KAFKA_BROKER_ID=1'
+      - 'KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:9981'
+      - 'KAFKA_ZOOKEEPER_CONNECT=zookeeper:9981'
+      - 'ALLOW_PLAINTEXT_LISTENER=yes'
+      - 'KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      - 'KAFKA_CFG_LISTENERS=CLIENT://:9992,EXTERNAL://:9093'
+      - 'KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9992,EXTERNAL://localhost:9093'
+      - 'KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT'
+    ports:
+      - '9992:9992'
+    depends_on:
+      - kafka-ui
+      - zookeeper
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    environment:
+      - 'DYNAMIC_CONFIG_ENABLED=true'
+      - 'KAFKA_CLUSTERS_0_NAME=local'
+      - 'KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9992'
+    ports:
+      - '9000:8080'
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    restart: unless-stopped
+    environment:
+      - 'ZOO_PORT_NUMBER=9981'
+      - 'ALLOW_ANONYMOUS_LOGIN=yes'
+    ports:
+      - '9981:9981'
+  clickhouse:
+    image: bitnami/clickhouse:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - type: bind
+        source: ./tsv/hits_v1.tsv
+        target: /bitnami/clickhouse/tsv/hits_v1.tsv
+      - /etc/conf.d/clickhouse.config.xml:/bitnami/clickhouse/etc/conf.d/config.xml:ro
+    ports:
+      - "8002:9000"
+      - "9123:8123"
