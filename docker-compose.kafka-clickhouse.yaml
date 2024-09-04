@@ -18,7 +18,6 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSS
-      - KAFKA_CREATE_TOPICS="${TOPIC_NAME}:1:1"
     volumes:
       - ./shared/${NODE_ENV}/kafka:/bitnami/kafka
     ports:
