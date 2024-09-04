@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS kafka_queue
 ) Engine = Kafka
 SETTINGS
 kafka_broker_list='kafka:19092',
-kafka_topic_list='people',
+kafka_topic_list='topic1',
 kafka_group_name='clickhouse_consumer1',
 kafka_format='JSONEachRow';
 
