@@ -2,7 +2,7 @@ version: '3'
 
 services:
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse:latest
     ports:
       - "9123:8123"
       - "10000:9000"

@@ -3,7 +3,7 @@ version: '3'
 services:
 
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.4.1
     restart: unless-stopped
     environment:
       - KAFKA_ENABLE_KRAFT=yes
@@ -18,15 +18,17 @@ services:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSS
+      - KAFKA_CREATE_TOPICS="${TOPIC_NAME}:1:1"
     volumes:
-      - ./shared/${NODE_ENV}/kafka:/bitnami/kafka
+      - kafka_data:/bitnami/kafka
     ports:
       - "9092:9092"
     networks:
       - inn_kafka
 
   kafka-ui:
-    image: provectuslabs/kafka-ui:v0.7.2
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
     environment:
       - 'DYNAMIC_CONFIG_ENABLED=true'
       - 'KAFKA_CLUSTERS_0_NAME=local'
@@ -37,7 +39,7 @@ services:
       - inn_kafka
   
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse:latest
     volumes:
       - ./etc/conf.d/clickhouse.config.xml:/etc/clickhouse-server/config.xml
       - ./shared/${NODE_ENV}/clickhouse:/var/lib/clickhouse
@@ -51,3 +53,17 @@ services:
 networks:
   inn_kafka:
     driver: bridge
+
+volumes:
+  kafka_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./shared/${NODE_ENV}/kafka
+      o: bind
+  clickhouse_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./shared/${NODE_ENV}/clickhouse
+      o: bind
